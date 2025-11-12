@@ -1,3 +1,10 @@
+# [1.0.0-RC.2](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.1...v1.0.0-RC.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* upgrade PostgreSQL from 16 to 17 on Debian Trixie ([788542a](https://github.com/pcnate/postgres_pgvector/commit/788542a89d6b537a3d48001ec17dddcd3b4dc587)), closes [#4](https://github.com/pcnate/postgres_pgvector/issues/4)
+
 # 1.0.0-RC.1 (2025-11-12)
 
 
