@@ -67,6 +67,7 @@ echo -e "${GREEN}  ✓ create_graph() function works${NC}"
 
 # Create vertex
 docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1 <<'EOSQL'
+LOAD 'age';
 SET search_path = ag_catalog, "$user", public;
 SELECT * FROM cypher('test_graph_script', $$
   CREATE (n:TestNode {name: 'test', value: 42})
@@ -77,6 +78,7 @@ echo -e "${GREEN}  ✓ Create vertex works${NC}"
 
 # Query graph
 docker exec -i "$CONTAINER_NAME" psql -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1 <<'EOSQL'
+LOAD 'age';
 SET search_path = ag_catalog, "$user", public;
 SELECT * FROM cypher('test_graph_script', $$
   MATCH (n:TestNode)
