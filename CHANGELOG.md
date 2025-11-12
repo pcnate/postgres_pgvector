@@ -1,3 +1,10 @@
+# [1.0.0-RC.7](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.6...v1.0.0-RC.7) (2025-11-12)
+
+
+### Bug Fixes
+
+* build pgvector with compatible CPU instructions for CI ([1b09380](https://github.com/pcnate/postgres_pgvector/commit/1b0938057e5706768dedbfbbff213e325855daa7))
+
 # [1.0.0-RC.6](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.5...v1.0.0-RC.6) (2025-11-12)
 
 

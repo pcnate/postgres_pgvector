@@ -1,7 +1,7 @@
 {
   "name": "postgres-pgvector-lightrag",
   "private": true,
-  "version": "1.0.0-RC.6",
+  "version": "1.0.0-RC.7",
   "description": "Postgres + pgvector setup for LightRAG with semantic-release",
   "license": "UNLICENSED",
   "scripts": {
