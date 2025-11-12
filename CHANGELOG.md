@@ -1,3 +1,10 @@
+# [1.0.0-RC.3](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.2...v1.0.0-RC.3) (2025-11-12)
+
+
+### Features
+
+* add Apache AGE graph database extension support ([c742fb1](https://github.com/pcnate/postgres_pgvector/commit/c742fb1792f25f48db7fe94f2afc62bc42a53d4b)), closes [#6](https://github.com/pcnate/postgres_pgvector/issues/6)
+
 # [1.0.0-RC.2](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.1...v1.0.0-RC.2) (2025-11-12)
 
 
