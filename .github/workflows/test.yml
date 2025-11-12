@@ -121,6 +121,7 @@ jobs:
       - name: Test AGE graph operations
         run: |
           docker exec test-postgres psql -U lightrag -d lightrag -c "
+            LOAD 'age';
             SET search_path = ag_catalog, \"\$user\", public;
             SELECT * FROM cypher('test_graph', \$\$
               CREATE (n:Person {name: 'Alice', age: 30})
@@ -132,6 +133,7 @@ jobs:
       - name: Test AGE graph query
         run: |
           docker exec test-postgres psql -U lightrag -d lightrag -c "
+            LOAD 'age';
             SET search_path = ag_catalog, \"\$user\", public;
             SELECT * FROM cypher('test_graph', \$\$
               MATCH (n:Person)
