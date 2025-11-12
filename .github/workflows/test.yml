@@ -1,0 +1,176 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - development
+  push:
+    branches:
+      - main
+      - development
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: lightrag-pgvector:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start PostgreSQL container
+        run: |
+          docker run -d \
+            --name test-postgres \
+            -e POSTGRES_DB=lightrag \
+            -e POSTGRES_USER=lightrag \
+            -e POSTGRES_PASSWORD=lightrag \
+            -p 5432:5432 \
+            lightrag-pgvector:test
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..30}; do
+            if docker exec test-postgres pg_isready -U lightrag -d lightrag; then
+              echo "PostgreSQL is ready!"
+              exit 0
+            fi
+            echo "Attempt $i/30: PostgreSQL not ready yet..."
+            sleep 2
+          done
+          echo "PostgreSQL failed to start"
+          exit 1
+
+      - name: Test PostgreSQL connection
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "SELECT version();"
+
+      - name: Test pgvector extension is available
+        run: |
+          result=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT COUNT(*) FROM pg_available_extensions WHERE name = 'vector';")
+          if [ "$result" -ne 1 ]; then
+            echo "ERROR: pgvector extension is not available"
+            exit 1
+          fi
+          echo "✓ pgvector extension is available"
+
+      - name: Test pgvector extension is installed
+        run: |
+          result=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT COUNT(*) FROM pg_extension WHERE extname = 'vector';")
+          if [ "$result" -ne 1 ]; then
+            echo "ERROR: pgvector extension is not installed"
+            exit 1
+          fi
+          echo "✓ pgvector extension is installed"
+
+      - name: Test pgvector version
+        run: |
+          version=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT extversion FROM pg_extension WHERE extname = 'vector';")
+          echo "pgvector version: $version"
+          if [ -z "$version" ]; then
+            echo "ERROR: Could not determine pgvector version"
+            exit 1
+          fi
+          echo "✓ pgvector version: $version"
+
+      - name: Test vector data type
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            CREATE TABLE test_vectors (
+              id SERIAL PRIMARY KEY,
+              embedding vector(3)
+            );
+          "
+          echo "✓ Created table with vector column"
+
+      - name: Test vector insertion
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            INSERT INTO test_vectors (embedding) VALUES ('[1,2,3]');
+            INSERT INTO test_vectors (embedding) VALUES ('[4,5,6]');
+            INSERT INTO test_vectors (embedding) VALUES ('[7,8,9]');
+          "
+          echo "✓ Inserted test vectors"
+
+      - name: Test vector query
+        run: |
+          result=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT COUNT(*) FROM test_vectors;")
+          if [ "$result" -ne 3 ]; then
+            echo "ERROR: Expected 3 rows, got $result"
+            exit 1
+          fi
+          echo "✓ Vector query successful"
+
+      - name: Test vector similarity search (L2 distance)
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            SELECT id, embedding, embedding <-> '[3,2,1]' AS distance
+            FROM test_vectors
+            ORDER BY embedding <-> '[3,2,1]'
+            LIMIT 2;
+          "
+          echo "✓ L2 distance similarity search successful"
+
+      - name: Test vector similarity search (cosine distance)
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            SELECT id, embedding, embedding <=> '[1,1,1]' AS distance
+            FROM test_vectors
+            ORDER BY embedding <=> '[1,1,1]'
+            LIMIT 2;
+          "
+          echo "✓ Cosine distance similarity search successful"
+
+      - name: Test vector similarity search (inner product)
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            SELECT id, embedding, (embedding <#> '[1,1,1]') * -1 AS inner_product
+            FROM test_vectors
+            ORDER BY embedding <#> '[1,1,1]'
+            LIMIT 2;
+          "
+          echo "✓ Inner product similarity search successful"
+
+      - name: Test IVFFlat index creation
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            CREATE INDEX ON test_vectors USING ivfflat (embedding vector_l2_ops) WITH (lists = 1);
+          "
+          echo "✓ IVFFlat index created successfully"
+
+      - name: Test HNSW index creation
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            DROP INDEX IF EXISTS test_vectors_embedding_idx;
+            CREATE INDEX ON test_vectors USING hnsw (embedding vector_l2_ops);
+          "
+          echo "✓ HNSW index created successfully"
+
+      - name: Cleanup test table
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "DROP TABLE test_vectors;"
+          echo "✓ Test table dropped"
+
+      - name: Show container logs on failure
+        if: failure()
+        run: |
+          echo "=== PostgreSQL Container Logs ==="
+          docker logs test-postgres
+
+      - name: Stop and remove container
+        if: always()
+        run: |
+          docker stop test-postgres || true
+          docker rm test-postgres || true

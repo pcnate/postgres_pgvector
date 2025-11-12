@@ -10,6 +10,21 @@ Quick start
 - Logs: `docker compose logs -f postgres`
 - Stop: `docker compose down`
 
+Dockerfile (alternative to Compose)
+----------------------------------
+- Build image: `docker build -t lightrag-pgvector .`
+- Run container:
+  - `docker run -d --name lightrag-postgres \
+      -p 5432:5432 \
+      -e POSTGRES_DB=lightrag \
+      -e POSTGRES_USER=lightrag \
+      -e POSTGRES_PASSWORD=lightrag \
+      -v pgdata:/var/lib/postgresql/data \
+      lightrag-pgvector`
+- Notes:
+  - Init scripts in `db/init` are baked into the image and run only on first init of a fresh volume.
+  - Change port or credentials by overriding `-p` and `-e` flags when running.
+
 Connect
 -------
 - psql: `psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$POSTGRES_PORT/$POSTGRES_DB"`
