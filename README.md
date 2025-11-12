@@ -114,3 +114,12 @@ Local development
 -----------------
 - Requires Docker Desktop.
 - Node 18+ if you want to run `semantic-release` locally.
+
+**Git Workflow:**
+1. Install git hooks: `./install-hooks.sh`
+2. Create feature branch: `git checkout -b feat/your-feature`
+3. Make changes and commit
+4. Push and create PR
+
+The pre-commit hook prevents direct commits to `main` and `development` branches, enforcing the feature branch workflow.
+# test
