@@ -1,3 +1,10 @@
+# [1.0.0-RC.4](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.3...v1.0.0-RC.4) (2025-11-12)
+
+
+### Bug Fixes
+
+* add LOAD 'age' to enable AGE extension in sessions ([d4f2fff](https://github.com/pcnate/postgres_pgvector/commit/d4f2fffa36f09c547f2c6958f9e89430324069e7))
+
 # [1.0.0-RC.3](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.2...v1.0.0-RC.3) (2025-11-12)
 
 
