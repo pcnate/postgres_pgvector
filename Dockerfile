@@ -3,9 +3,9 @@
 # --------------------------------
 # Builder stage: compile pgvector
 # --------------------------------
-FROM postgres:16-bookworm AS builder
+FROM postgres:17-trixie AS builder
 
-ARG PG_MAJOR=16
+ARG PG_MAJOR=17
 ARG PGVECTOR_VERSION=v0.7.4
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -28,9 +28,9 @@ RUN set -eux; \
 # ----------------------------
 # Final stage: runtime image
 # ----------------------------
-FROM postgres:16-bookworm
+FROM postgres:17-trixie
 
-ARG PG_MAJOR=16
+ARG PG_MAJOR=17
 
 # Copy the compiled extension artifacts from the builder stage
 COPY --from=builder /tmp/install/usr/lib/postgresql/${PG_MAJOR}/lib/vector.so /usr/lib/postgresql/${PG_MAJOR}/lib/
