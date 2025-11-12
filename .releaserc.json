@@ -1,13 +1,38 @@
 {
   "branches": [
-    "main",
-    { "name": "development", "prerelease": "rc" }
+    { "name": "main", "channel": "stable", "tag": "latest" },
+    { "name": "development", "prerelease": "RC", "channel": "development" }
   ],
   "plugins": [
-    "@semantic-release/commit-analyzer",
+    ["@semantic-release/commit-analyzer", {
+      "preset": "angular",
+      "releaseRules": [
+        { "type": "docs", "scope": "README" ,"release": "patch" },
+        { "type": "refactor"                ,"release": "patch" },
+        { "type": "style"                   ,"release": "patch" },
+        { "type": "ci"                      ,"release": "patch" }
+      ],
+      "parserOpts": {
+        "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+      }
+    }],
     "@semantic-release/release-notes-generator",
-    ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
-    "@semantic-release/github",
-    ["@semantic-release/git", { "assets": ["CHANGELOG.md"] }]
+    "@semantic-release/changelog",
+    "@semantic-release/npm",
+    ["@semantic-release/git", {
+      "assets": [
+        "package.json",
+        "package-lock.json",
+        "README.md",
+        "CHANGELOG.md"
+      ],
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+    }],
+    ["@semantic-release/github", {
+      "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}",
+      "assets": [],
+      "successComment": false,
+      "failComment": false
+    }]
   ]
 }
