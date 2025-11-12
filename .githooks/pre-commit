@@ -1,0 +1,23 @@
+#!/bin/bash
+# Pre-commit hook to prevent direct commits to main and development branches
+# Forces developers to use feature branches
+
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+PROTECTED_BRANCHES="^(main|development)$"
+
+if [[ $BRANCH =~ $PROTECTED_BRANCHES ]]; then
+    echo ""
+    echo "❌ Direct commits to '$BRANCH' branch are not allowed!"
+    echo ""
+    echo "Please use a feature branch instead:"
+    echo "  git checkout -b feat/your-feature-name"
+    echo "  git add ..."
+    echo "  git commit -m '...'"
+    echo "  git push origin feat/your-feature-name"
+    echo ""
+    echo "Then create a pull request on GitHub."
+    echo ""
+    exit 1
+fi
+
+exit 0
