@@ -1,7 +1,7 @@
 # Copilot Instructions
 
 ## Overview
-- Goal: Maintain a Dockerized Postgres 16 instance (Debian bookworm) with pgvector compiled and available by default.
+- Goal: Maintain a Dockerized Postgres 17 instance (Debian trixie) with pgvector compiled and available by default.
 - Key files:
   - `Dockerfile` (multi-stage: builds pgvector in builder, copies into final runtime)
   - `docker-compose.yml` (builds from local Dockerfile, tags `lightrag-pgvector`)
@@ -10,16 +10,16 @@
 ## Generation Rules
 - Keep changes minimal and scoped to the task.
 - Do not introduce unrelated tools or refactors.
-- Keep builder and final stages on the same Postgres major/OS tag: `postgres:16-bookworm`.
+- Keep builder and final stages on the same Postgres major/OS tag: `postgres:17-trixie`.
 - Respect existing env vars and defaults (`POSTGRES_DB/USER/PASSWORD`).
 - Do not remove the `db/init` semantics; scripts should run only on first init.
 
 ## Dockerfile Guidance
 - Multi-stage build only:
-  - Builder: install `build-essential` and `postgresql-server-dev-16`; compile pgvector (pin via `ARG PGVECTOR_VERSION`).
+  - Builder: install `build-essential` and `postgresql-server-dev-17`; compile pgvector (pin via `ARG PGVECTOR_VERSION`).
   - Final: copy `vector.so` and extension SQL/control files into the correct Postgres paths.
 - Do not ship build tools or apt caches in the final image.
-- Keep `FROM postgres:16-bookworm` for both stages and `ARG PG_MAJOR=16`.
+- Keep `FROM postgres:17-trixie` for both stages and `ARG PG_MAJOR=17`.
 
 ## Compose Guidance
 - Use `build: .` and `image: lightrag-pgvector`.
