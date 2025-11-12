@@ -22,9 +22,10 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # Build and stage install pgvector into a temporary directory
+# Use OPTFLAGS to ensure compatibility with GitHub Actions runners
 RUN set -eux; \
     git clone --depth 1 --branch "${PGVECTOR_VERSION}" https://github.com/pgvector/pgvector.git /tmp/pgvector; \
-    make -C /tmp/pgvector; \
+    make -C /tmp/pgvector OPTFLAGS="-O3 -march=x86-64 -msse4.2"; \
     make -C /tmp/pgvector install DESTDIR=/tmp/install; \
     rm -rf /tmp/pgvector
 
