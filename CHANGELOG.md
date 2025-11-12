@@ -1,3 +1,10 @@
+# [1.0.0-RC.5](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.4...v1.0.0-RC.5) (2025-11-12)
+
+
+### Bug Fixes
+
+* remove LOAD 'age' from init script to prevent server crash ([9dfd2ad](https://github.com/pcnate/postgres_pgvector/commit/9dfd2ad73595ffcdadeb674e3aa1170a56cfec24))
+
 # [1.0.0-RC.4](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.3...v1.0.0-RC.4) (2025-11-12)
 
 
