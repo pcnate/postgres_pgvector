@@ -1,7 +1,7 @@
 Postgres + pgvector for LightRAG
 ================================
 
-Spin up a PostgreSQL instance with pgvector and pg_trgm enabled for LightRAG.
+Spin up a PostgreSQL instance with pgvector enabled for LightRAG.
 
 Quick start
 -----------
@@ -13,19 +13,20 @@ Quick start
 Connect
 -------
 - psql: `psql "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@localhost:$POSTGRES_PORT/$POSTGRES_DB"`
-- Verify: in psql, run `\\dx` and confirm `vector` and `pg_trgm` are installed.
+- Verify: in psql, run `\\dx` and confirm `vector` is installed.
 
 Extensions
 ----------
-- Enabled by default via `db/init/001_extensions.sql`:
-  - `vector` (pgvector)
-  - `pg_trgm`
-- Optional lines are commented; uncomment to enable on first init.
+Extensions
+----------
+- Enabled by default: `vector` (pgvector)
+- Optional (commented in `db/init/001_extensions.sql`): `pg_trgm`, `pgcrypto`, `uuid-ossp`, `citext`, `ltree`
+- To enable later without reinitializing, run `CREATE EXTENSION ...;` in your DB.
 
 Notes
 -----
 - The `./db/init` folder runs only on first initialization of the volume (`pgdata`).
-  To re-run init scripts, remove the volume: `docker compose down -v` (data loss).
+  You can install additional extensions later via `CREATE EXTENSION ...;` without dropping data.
 
 Example schema (optional)
 -------------------------
