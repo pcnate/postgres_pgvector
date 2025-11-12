@@ -85,6 +85,66 @@ jobs:
           fi
           echo "✓ pgvector version: $version"
 
+      - name: Test AGE extension is available
+        run: |
+          result=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT COUNT(*) FROM pg_available_extensions WHERE name = 'age';")
+          if [ "$result" -ne 1 ]; then
+            echo "ERROR: AGE extension is not available"
+            exit 1
+          fi
+          echo "✓ AGE extension is available"
+
+      - name: Test AGE extension is installed
+        run: |
+          result=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT COUNT(*) FROM pg_extension WHERE extname = 'age';")
+          if [ "$result" -ne 1 ]; then
+            echo "ERROR: AGE extension is not installed"
+            exit 1
+          fi
+          echo "✓ AGE extension is installed"
+
+      - name: Test AGE version
+        run: |
+          version=$(docker exec test-postgres psql -U lightrag -d lightrag -t -c "SELECT extversion FROM pg_extension WHERE extname = 'age';")
+          echo "AGE version: $version"
+          if [ -z "$version" ]; then
+            echo "ERROR: Could not determine AGE version"
+            exit 1
+          fi
+          echo "✓ AGE version: $version"
+
+      - name: Test AGE create_graph function
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "SELECT create_graph('test_graph');"
+          echo "✓ create_graph function works"
+
+      - name: Test AGE graph operations
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            SET search_path = ag_catalog, \"\$user\", public;
+            SELECT * FROM cypher('test_graph', \$\$
+              CREATE (n:Person {name: 'Alice', age: 30})
+              RETURN n
+            \$\$) as (v agtype);
+          "
+          echo "✓ Created vertex in graph"
+
+      - name: Test AGE graph query
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "
+            SET search_path = ag_catalog, \"\$user\", public;
+            SELECT * FROM cypher('test_graph', \$\$
+              MATCH (n:Person)
+              RETURN n.name, n.age
+            \$\$) as (name agtype, age agtype);
+          "
+          echo "✓ Graph query successful"
+
+      - name: Test AGE drop_graph function
+        run: |
+          docker exec test-postgres psql -U lightrag -d lightrag -c "SELECT drop_graph('test_graph', true);"
+          echo "✓ drop_graph function works"
+
       - name: Test vector data type
         run: |
           docker exec test-postgres psql -U lightrag -d lightrag -c "

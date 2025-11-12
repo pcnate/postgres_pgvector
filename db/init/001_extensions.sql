@@ -1,5 +1,9 @@
 -- Enable required extensions for LightRAG usage
 CREATE EXTENSION IF NOT EXISTS vector;   -- pgvector (required)
+CREATE EXTENSION IF NOT EXISTS age;      -- Apache AGE graph database (required)
+
+-- Configure AGE search path to include ag_catalog
+ALTER DATABASE lightrag SET search_path = ag_catalog, "$user", public;
 
 -- Add optional extensions below if desired
 -- CREATE EXTENSION IF NOT EXISTS pg_trgm;   -- trigram similarity (optional)
