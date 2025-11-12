@@ -2,9 +2,6 @@
 CREATE EXTENSION IF NOT EXISTS vector;   -- pgvector (required)
 CREATE EXTENSION IF NOT EXISTS age;      -- Apache AGE graph database (required)
 
--- Load AGE extension into session
-LOAD 'age';
-
 -- Configure AGE search path to include ag_catalog
 ALTER DATABASE lightrag SET search_path = ag_catalog, "$user", public;
 
