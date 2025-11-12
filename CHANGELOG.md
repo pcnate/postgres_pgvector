@@ -1,3 +1,10 @@
+# [1.0.0-RC.6](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.5...v1.0.0-RC.6) (2025-11-12)
+
+
+### Bug Fixes
+
+* set search_path with public first to prevent pgvector crash ([87dd0a1](https://github.com/pcnate/postgres_pgvector/commit/87dd0a1ec51b3b019e0e7f6fe2a1fddeeb21ce57))
+
 # [1.0.0-RC.5](https://github.com/pcnate/postgres_pgvector/compare/v1.0.0-RC.4...v1.0.0-RC.5) (2025-11-12)
 
 
