@@ -1,0 +1,25 @@
+# VCS
+.git
+.gitignore
+.github
+
+# Node/npm noise (repo includes package.json for release tooling)
+node_modules
+npm-debug.log*
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+
+# Build context hygiene
+docker-compose.yml
+README.md
+
